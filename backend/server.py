@@ -395,25 +395,35 @@ async def get_team_technicians(team_id: str, current_user: dict = Depends(get_cu
 
 # ================== MAINTENANCE REQUESTS ==================
 
-@api_router.post("/maintenance-requests", response_model=MaintenanceRequestResponse)
-async def create_maintenance_request(request: MaintenanceRequestCreate, current_user: dict = Depends(get_current_user)):
-    if request.request_type == "preventive":
+@api_router.put("/maintenance-requests/{request_id}", response_model=MaintenanceRequestResponse)
+async def update_maintenance_request(request_id: str, update: MaintenanceRequestUpdate, current_user: dict = Depends(get_current_user)):
+    req = await db.maintenance_requests.find_one({"id": request_id}, {"_id": 0})
+    if not req:
+        raise HTTPException(status_code=404, detail="Request not found")
+    
+    user_role = current_user["role"]
+    
+    if user_role == "employee":
+        raise HTTPException(status_code=403, detail="Employees cannot update maintenance requests")
+    
+    if user_role == "technician":
+        if req.get("assigned_technician_id") != current_user["id"]:
+            raise HTTPException(status_code=403, detail="You can only update requests assigned to you")
+        allowed_fields = {"status", "duration_hours", "notes"}
+        for key, value in update.model_dump().items():
+            if value is not None and key not in allowed_fields:
+                raise HTTPException(status_code=403, detail=f"Technicians cannot modify {key}")
+    
+    update_data = {k: v for k, v in update.model_dump().items() if v is not None}
+    update_data["updated_at"] = datetime.now(timezone.utc).isoformat()
+    
+    if update.status == "scrap":
         check_roles(current_user, ["admin", "manager"])
-    equipment = await db.equipment.find_one({"id": request.equipment_id}, {"_id": 0})
-    if not equipment: raise HTTPException(status_code=404, detail="Equipment not found")
-    request_id = str(uuid.uuid4())
-    now = datetime.now(timezone.utc).isoformat()
-    request_doc = {
-        "id": request_id, "subject": request.subject, "equipment_id": request.equipment_id,
-        "team_id": equipment["default_team_id"], "assigned_technician_id": equipment.get("default_technician_id"),
-        "request_type": request.request_type, "scheduled_date": request.scheduled_date,
-        "duration_hours": None, "status": "new", "created_by_id": current_user["id"],
-        "description": request.description, "notes": None, "created_at": now, "updated_at": now
-    }
-    await db.maintenance_requests.insert_one(request_doc)
-    team = await db.teams.find_one({"id": equipment["default_team_id"]}, {"_id": 0})
-    return MaintenanceRequestResponse(**request_doc, equipment_name=equipment["name"], team_name=team["name"] if team else None, technician_name=None, created_by_name=current_user["name"], is_overdue=False)
-
+        await db.equipment.update_one({"id": req["equipment_id"]}, {"$set": {"is_usable": False}})
+        update_data["notes"] = (update_data.get("notes", "") or "") + " [Equipment marked as scrapped]"
+    
+    await db.maintenance_requests.update_one({"id": request_id}, {"$set": update_data})
+    return await get_maintenance_request_by_id(request_id, current_user)
 @api_router.get("/maintenance-requests", response_model=List[MaintenanceRequestResponse])
 async def get_maintenance_requests(status: Optional[str] = None, equipment_id: Optional[str] = None, request_type: Optional[str] = None, current_user: dict = Depends(get_current_user)):
     query = {}
