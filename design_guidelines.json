@@ -1,0 +1,127 @@
+{
+  "identity": {
+    "name": "GearGuard",
+    "persona": "E1: The Anti-AI Designer",
+    "aesthetic": "Industrial Control Room",
+    "vibe": "Precision, Robustness, High-Contrast, Technical",
+    "theme_mode": "dark"
+  },
+  "typography": {
+    "fonts": {
+      "heading": "Manrope",
+      "body": "Manrope",
+      "mono": "JetBrains Mono"
+    },
+    "import_url": "https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Manrope:wght@300;400;600;800&display=swap",
+    "rules": {
+      "headings": "font-heading font-extrabold tracking-tight uppercase text-white",
+      "subheadings": "font-heading font-semibold text-slate-400 tracking-wide",
+      "body": "font-body text-slate-300 leading-relaxed",
+      "data_display": "font-mono text-xs tracking-wider text-emerald-400",
+      "labels": "font-mono text-[10px] uppercase tracking-[0.2em] text-slate-500"
+    }
+  },
+  "colors": {
+    "palette": {
+      "background": "#0B1120",
+      "surface": "#151F32",
+      "surface_highlight": "#1E293B",
+      "border": "#334155",
+      "primary": "#F8FAFC",
+      "secondary": "#94A3B8",
+      "accent_warning": "#F59E0B",
+      "accent_success": "#10B981",
+      "accent_critical": "#EF4444",
+      "accent_info": "#3B82F6"
+    },
+    "tailwind_config": {
+      "colors": {
+        "background": "hsl(222, 47%, 11%)",
+        "foreground": "hsl(210, 40%, 98%)",
+        "card": "hsl(217, 33%, 17%)",
+        "card-foreground": "hsl(210, 40%, 98%)",
+        "popover": "hsl(217, 33%, 17%)",
+        "popover-foreground": "hsl(210, 40%, 98%)",
+        "primary": "hsl(210, 40%, 98%)",
+        "primary-foreground": "hsl(222, 47%, 11%)",
+        "secondary": "hsl(217, 19%, 27%)",
+        "secondary-foreground": "hsl(210, 40%, 98%)",
+        "muted": "hsl(217, 19%, 27%)",
+        "muted-foreground": "hsl(215, 20.2%, 65.1%)",
+        "accent": "hsl(217, 19%, 27%)",
+        "accent-foreground": "hsl(210, 40%, 98%)",
+        "destructive": "hsl(0, 62.8%, 30.6%)",
+        "destructive-foreground": "hsl(210, 40%, 98%)",
+        "border": "hsl(217, 19%, 27%)",
+        "input": "hsl(217, 19%, 27%)",
+        "ring": "hsl(212, 100%, 45%)"
+      }
+    }
+  },
+  "layout_strategy": {
+    "type": "The Control Room Grid",
+    "container_style": "max-w-[1600px] mx-auto p-6",
+    "grid_system": "grid grid-cols-12 gap-4",
+    "surface_style": "border border-white/10 bg-card/50 backdrop-blur-sm",
+    "spacing": {
+      "section_gap": "gap-8",
+      "internal_padding": "p-6"
+    }
+  },
+  "components": {
+    "SmartButton": {
+      "description": "A rectangular button used in Odoo-style interfaces to show stats directly on the action.",
+      "style": "flex flex-col items-center justify-center h-20 w-32 border border-white/10 bg-white/5 hover:bg-white/10 transition-all rounded-sm",
+      "content_structure": "<Icon className='h-5 w-5 mb-1 text-accent' /> <span className='font-mono text-xl font-bold'>{count}</span> <span className='text-[10px] uppercase tracking-wider text-muted-foreground'>{label}</span>"
+    },
+    "KanbanBoard": {
+      "library": "@dnd-kit/core @dnd-kit/sortable",
+      "style": "flex gap-6 overflow-x-auto h-[calc(100vh-200px)] pb-4",
+      "column_style": "min-w-[300px] bg-white/5 rounded-lg p-4 border border-white/5 flex flex-col gap-3",
+      "card_style": "bg-card p-4 rounded border-l-4 border-l-accent shadow-lg hover:translate-y-[-2px] transition-transform cursor-grab active:cursor-grabbing"
+    },
+    "MaintenanceCalendar": {
+      "library": "react-big-calendar",
+      "style": "h-[600px] bg-card rounded-lg p-4 border border-white/10 text-sm font-mono",
+      "customization": "Override default toolbar with custom Shadcn buttons. Use 'month', 'week', 'day' views."
+    },
+    "StatusBadge": {
+      "style": "inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-opacity-10 border border-opacity-20",
+      "variants": {
+        "new": "bg-blue-500 text-blue-400 border-blue-500",
+        "in_progress": "bg-yellow-500 text-yellow-400 border-yellow-500",
+        "repaired": "bg-green-500 text-green-400 border-green-500",
+        "scrap": "bg-red-500 text-red-400 border-red-500"
+      }
+    }
+  },
+  "assets": {
+    "images": {
+      "login_bg": "https://images.pexels.com/photos/34249436/pexels-photo-34249436.jpeg",
+      "technician_placeholder": "https://images.pexels.com/photos/3856118/pexels-photo-3856118.jpeg",
+      "equipment_placeholder_1": "https://images.pexels.com/photos/34249436/pexels-photo-34249436.jpeg",
+      "equipment_placeholder_2": "https://images.pexels.com/photos/9565889/pexels-photo-9565889.jpeg"
+    },
+    "icons": {
+      "library": "lucide-react",
+      "preferred_set": ["Wrench", "Settings", "Activity", "AlertTriangle", "CheckCircle", "Clock", "Users", "LayoutDashboard", "Calendar"]
+    }
+  },
+  "universal_guidelines": [
+    "DO NOT use gradients for backgrounds. Use solid dark colors with subtle noise textures if possible.",
+    "All borders must be 1px solid white/10 (10% opacity white).",
+    "Use 'data-testid' on all interactive elements.",
+    "Input fields should have a 'font-mono' style for values.",
+    "Avoid rounded-xl or rounded-2xl. Use rounded-sm or rounded-md for an industrial feel.",
+    "Animations should be fast (150ms-200ms) and linear or ease-out. No bouncy springs.",
+    "Always use the 'SmartButton' component for equipment stats (e.g., '5 Requests', '2 Overdue')."
+  ],
+  "instructions_to_main_agent": {
+    "step_1": "Install dependencies: @dnd-kit/core @dnd-kit/sortable @dnd-kit/utilities react-big-calendar date-fns lucide-react clsx tailwind-merge",
+    "step_2": "Update tailwind.config.js with the provided colors and font families.",
+    "step_3": "Create the 'SmartButton' and 'StatusBadge' reusable components first.",
+    "step_4": "Implement the Layout with a fixed sidebar and top navbar.",
+    "step_5": "Build the Kanban board using dnd-kit. Ensure columns are: New Request, In Progress, Repaired, Scrap.",
+    "step_6": "Build the Equipment Detail page with the Smart Button row at the top."
+  }
+}
